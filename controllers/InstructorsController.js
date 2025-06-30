@@ -3,62 +3,198 @@ const Instructor = require('../models/instructors');
 const errorMessages = require('../types/errors').errorMessages
 const successMessages = require('../types/errors').successMessages
 
-
 exports.getAllStudents = async (req, res) => {
     try {
-        const students = await Student.find({ instructorId: req.user._id });
-        return res.status(200).json({ success: true, data: students });
+        // Get instructor's school ID
+        const instructor = await Instructor.findOne({ userId: req.user._id });
+        if (!instructor) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Instructor not found' 
+            });
+        }
+
+        // Get all students from the instructor's school
+        const students = await Student.find({ schoolId: instructor.schoolId });
+        return res.status(200).json({ 
+            success: true, 
+            message: 'Students retrieved successfully',
+            data: students 
+        });
     } catch (error) {
-        res.status(500).json({ success: false, message: errorMessages.getAllStudentsError, error });
+        console.error('Error getting students:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: errorMessages.getAllStudentsError, 
+            error: error.message 
+        });
     }
 };
+
 exports.addNewStudent = async (req, res) => {
     try {
-        const { studentFullName, phoneNumber, balance, lessonsNumber } = req.body;
+        const { studentFullName, phoneNumber } = req.body;
 
-        if (!req.user.role.includes('instructor') && !req.user.role.includes('admin-instructor')) {
-            return res.status(403).json({ success: false, message: errorMessages.Unauthorized });
+        // Validate required fields
+        if (!studentFullName || !phoneNumber) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Student full name and phone number are required' 
+            });
         }
-        const newStudent = {
+
+        // Check if user has proper role
+        if (!req.user.role.includes('instructor') && !req.user.role.includes('admin-instructor')) {
+            return res.status(403).json({ 
+                success: false, 
+                message: errorMessages.Unauthorized 
+            });
+        }
+
+        // Get instructor's school ID
+        const instructor = await Instructor.findOne({ userId: req.user._id });
+        if (!instructor) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Instructor not found' 
+            });
+        }
+
+        // Check if student with this phone number already exists
+        const existingStudent = await Student.findOne({ phoneNumber });
+        if (existingStudent) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Student with this phone number already exists' 
+            });
+        }
+
+        const newStudent = new Student({
             studentFullName,
             phoneNumber,
-            balance,
-            lessonsNumber,
-            instructorId: req.user._id, // Instructor who is adding the student
-        }
-        const student = await Student.create(newStudent);
+            schoolId: instructor.schoolId,
+            lessonsNumber: 0,
+            studentStatus: 'active'
+        });
 
-        return res.status(201).json({ success: true, message: successMessages.studentAdded, data: newStudent });
+        const student = await newStudent.save();
+
+        return res.status(201).json({ 
+            success: true, 
+            message: successMessages.studentAdded, 
+            data: student 
+        });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Error adding student', error });
+        console.error('Error adding student:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error adding student', 
+            error: error.message 
+        });
     }
 };
 
 exports.getStudentProfile = async (req, res) => {
     try {
-        const student = await Student.findById(req.params.studentId);
+        const { studentId } = req.params;
 
-        if (!student) return res.status(404).json({ success: false, message: errorMessages.studentDoesntExists });
+        // Get instructor's school ID
+        const instructor = await Instructor.findOne({ userId: req.user._id });
+        if (!instructor) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Instructor not found' 
+            });
+        }
 
-        return res.status(200).json({ success: true, data: student });
+        // Get student and verify they belong to the instructor's school
+        const student = await Student.findOne({ 
+            _id: studentId, 
+            schoolId: instructor.schoolId 
+        });
+
+        if (!student) {
+            return res.status(404).json({ 
+                success: false, 
+                message: errorMessages.studentDoesntExists 
+            });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            message: 'Student profile retrieved successfully',
+            data: student 
+        });
     } catch (error) {
-        res.status(500).json({ success: false, message: errorMessages.studentDoesntExists, error });
+        console.error('Error getting student profile:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: errorMessages.studentDoesntExists, 
+            error: error.message 
+        });
     }
 };
 
 exports.updateStudentProfile = async (req, res) => {
     try {
-        const { studentFullName, phoneNumber, balance } = req.body;
-        const updatedStudent = await Student.findByIdAndUpdate(
-            req.params.studentId,
-            { studentFullName, phoneNumber, balance },
+        const { studentId } = req.params;
+        const { studentFullName, phoneNumber, studentStatus } = req.body;
+
+        // Get instructor's school ID
+        const instructor = await Instructor.findOne({ userId: req.user._id });
+        if (!instructor) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Instructor not found' 
+            });
+        }
+
+        // Check if phone number is being updated and if it's already taken
+        if (phoneNumber) {
+            const existingStudent = await Student.findOne({ 
+                phoneNumber, 
+                _id: { $ne: studentId } 
+            });
+            if (existingStudent) {
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Phone number already exists' 
+                });
+            }
+        }
+
+        // Update student and verify they belong to the instructor's school
+        const updatedStudent = await Student.findOneAndUpdate(
+            { 
+                _id: studentId, 
+                schoolId: instructor.schoolId 
+            },
+            { 
+                studentFullName, 
+                phoneNumber, 
+                studentStatus 
+            },
             { new: true, runValidators: true }
         );
 
-        if (!updatedStudent) return res.status(404).json({ success: false, message: errorMessages.studentDoesntExists });
+        if (!updatedStudent) {
+            return res.status(404).json({ 
+                success: false, 
+                message: errorMessages.studentDoesntExists 
+            });
+        }
 
-        return res.status(200).json({ success: true, message: successMessages.studentAddedUpdated, data: updatedStudent });
+        return res.status(200).json({ 
+            success: true, 
+            message: successMessages.studentAddedUpdated, 
+            data: updatedStudent 
+        });
     } catch (error) {
-        res.status(500).json({ success: false, message: errorMessages.errorUpdatingStudent, error });
+        console.error('Error updating student:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: errorMessages.errorUpdatingStudent, 
+            error: error.message 
+        });
     }
 };

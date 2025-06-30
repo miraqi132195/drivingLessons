@@ -3,7 +3,7 @@ const Instructor = require('../models/instructors');
 const errorMessages = require('../types/errors').errorMessages
 const successMessages = require('../types/errors').successMessages
 
-const DrivingSchool = require('../models/DrivingSchool');
+const DrivingSchool = require('../models/drivingSchool');
 const User = require('../models/users');
 
 exports.addNewDrivingSchool = async (req, res) => {

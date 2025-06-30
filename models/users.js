@@ -10,8 +10,11 @@ const userSchema = new mongoose.Schema({
         enum: ['admin-instructor', 'instructor', 'superAdmin'],
         required: true,
     },
+    active:{type: Boolean, default: true},
     password:{type: String,required: true},
+    dateOfBirth:{type: String,required: true},
 
+    paymentId:{type: String, required: true}
 }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {
