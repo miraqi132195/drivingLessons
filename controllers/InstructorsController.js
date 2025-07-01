@@ -5,7 +5,7 @@ const successMessages = require('../types/errors').successMessages
 
 exports.getAllStudents = async (req, res) => {
     try {
-        // Get instructor's school ID
+        // Get instructor's ID
         const instructor = await Instructor.findOne({ userId: req.user._id });
         if (!instructor) {
             return res.status(404).json({ 
@@ -14,8 +14,18 @@ exports.getAllStudents = async (req, res) => {
             });
         }
 
-        // Get all students from the instructor's school
-        const students = await Student.find({ schoolId: instructor.schoolId });
+        // Get all students assigned to this specific instructor
+        const students = await Student.find({ instructorId: instructor._id })
+            .populate('schoolId', 'schoolName')
+            .populate('instructorId', 'userId')
+            .populate({
+                path: 'instructorId',
+                populate: {
+                    path: 'userId',
+                    select: 'firstName lastName phoneNumber'
+                }
+            });
+
         return res.status(200).json({ 
             success: true, 
             message: 'Students retrieved successfully',
@@ -51,7 +61,7 @@ exports.addNewStudent = async (req, res) => {
             });
         }
 
-        // Get instructor's school ID
+        // Get instructor's profile
         const instructor = await Instructor.findOne({ userId: req.user._id });
         if (!instructor) {
             return res.status(404).json({ 
@@ -73,6 +83,7 @@ exports.addNewStudent = async (req, res) => {
             studentFullName,
             phoneNumber,
             schoolId: instructor.schoolId,
+            instructorId: instructor._id, // Assign student to this specific instructor
             lessonsNumber: 0,
             studentStatus: 'active'
         });
@@ -98,7 +109,7 @@ exports.getStudentProfile = async (req, res) => {
     try {
         const { studentId } = req.params;
 
-        // Get instructor's school ID
+        // Get instructor's ID
         const instructor = await Instructor.findOne({ userId: req.user._id });
         if (!instructor) {
             return res.status(404).json({ 
@@ -107,11 +118,18 @@ exports.getStudentProfile = async (req, res) => {
             });
         }
 
-        // Get student and verify they belong to the instructor's school
+        // Get student and verify they belong to this specific instructor
         const student = await Student.findOne({ 
             _id: studentId, 
-            schoolId: instructor.schoolId 
-        });
+            instructorId: instructor._id 
+        }).populate('schoolId', 'schoolName')
+          .populate({
+              path: 'instructorId',
+              populate: {
+                  path: 'userId',
+                  select: 'firstName lastName phoneNumber'
+              }
+          });
 
         if (!student) {
             return res.status(404).json({ 
@@ -140,7 +158,7 @@ exports.updateStudentProfile = async (req, res) => {
         const { studentId } = req.params;
         const { studentFullName, phoneNumber, studentStatus } = req.body;
 
-        // Get instructor's school ID
+        // Get instructor's ID
         const instructor = await Instructor.findOne({ userId: req.user._id });
         if (!instructor) {
             return res.status(404).json({ 
@@ -163,11 +181,11 @@ exports.updateStudentProfile = async (req, res) => {
             }
         }
 
-        // Update student and verify they belong to the instructor's school
+        // Update student and verify they belong to this specific instructor
         const updatedStudent = await Student.findOneAndUpdate(
             { 
                 _id: studentId, 
-                schoolId: instructor.schoolId 
+                instructorId: instructor._id 
             },
             { 
                 studentFullName, 
@@ -175,7 +193,14 @@ exports.updateStudentProfile = async (req, res) => {
                 studentStatus 
             },
             { new: true, runValidators: true }
-        );
+        ).populate('schoolId', 'schoolName')
+         .populate({
+             path: 'instructorId',
+             populate: {
+                 path: 'userId',
+                 select: 'firstName lastName phoneNumber'
+             }
+         });
 
         if (!updatedStudent) {
             return res.status(404).json({ 

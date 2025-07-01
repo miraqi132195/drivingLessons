@@ -2,6 +2,7 @@
 const uuid = require("uuid");
 const Lesson = require('../models/lessonDiary');
 const Student = require('../models/students');
+const Instructor = require('../models/instructors');
 const errorMessages = require('../types/errors').errorMessages;
 const successMessages = require('../types/errors').successMessages;
 
@@ -26,21 +27,24 @@ module.exports = {
                 });
             }
 
-            // Check if student exists and belongs to the instructor's school
-            const student = await Student.findById(studentId);
-            if (!student) {
-                return res.status(404).json({ 
-                    success: false, 
-                    message: 'Student not found' 
-                });
-            }
-
-            // Get instructor's school ID
-            const instructor = await require('../models/instructors').findOne({ userId: req.user._id });
+            // Get instructor's ID
+            const instructor = await Instructor.findOne({ userId: req.user._id });
             if (!instructor) {
                 return res.status(404).json({ 
                     success: false, 
                     message: 'Instructor not found' 
+                });
+            }
+
+            // Check if student exists and belongs to this specific instructor
+            const student = await Student.findOne({ 
+                _id: studentId, 
+                instructorId: instructor._id 
+            });
+            if (!student) {
+                return res.status(404).json({ 
+                    success: false, 
+                    message: 'Student not found or not assigned to you' 
                 });
             }
 
@@ -82,7 +86,7 @@ module.exports = {
     getAllLessons: async function (req, res, next) {
         try {
             // Get instructor's ID
-            const instructor = await require('../models/instructors').findOne({ userId: req.user._id });
+            const instructor = await Instructor.findOne({ userId: req.user._id });
             if (!instructor) {
                 return res.status(404).json({ 
                     success: false, 
@@ -118,7 +122,7 @@ module.exports = {
             const updateData = req.body;
 
             // Get instructor's ID
-            const instructor = await require('../models/instructors').findOne({ userId: req.user._id });
+            const instructor = await Instructor.findOne({ userId: req.user._id });
             if (!instructor) {
                 return res.status(404).json({ 
                     success: false, 
