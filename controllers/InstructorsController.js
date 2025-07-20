@@ -122,14 +122,15 @@ exports.getStudentProfile = async (req, res) => {
         const student = await Student.findOne({ 
             _id: studentId, 
             instructorId: instructor._id 
-        }).populate('schoolId', 'schoolName')
-          .populate({
-              path: 'instructorId',
-              populate: {
-                  path: 'userId',
-                  select: 'firstName lastName phoneNumber'
-              }
-          });
+        }).select('studentFullName phoneNumber lessonsNumber studentStatus')
+          //   .populate('schoolId', 'schoolName')
+          // .populate({
+          //     path: 'instructorId',
+          //     populate: {
+          //         path: 'userId',
+          //         select: 'firstName lastName phoneNumber'
+          //     }
+          // });
 
         if (!student) {
             return res.status(404).json({ 

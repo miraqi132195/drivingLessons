@@ -115,6 +115,38 @@ module.exports = {
             });
         }
     },
+    getAllStudentLessons: async function (req, res, next) {
+        try {
+            // Get instructor's ID
+            // const instructor = await Instructor.findOne({ userId: req.user._id });
+            // if (!instructor) {
+            //     return res.status(404).json({
+            //         success: false,
+            //         message: 'Instructor not found'
+            //     });
+            // }
+
+            // Get all lessons for this instructor
+            const lessons = await Lesson.find({ studentId: req.params.studentId ,  })
+                .populate('studentId', 'studentFullName phoneNumber')
+                // .populate('schoolId', 'schoolName')
+                .sort({ startTime: -1 });
+
+            res.status(200).json({
+                success: true,
+                message: 'Lessons retrieved successfully',
+                data: lessons
+            });
+
+        } catch (error) {
+            console.error('Error getting lessons:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error retrieving lessons',
+                error: error.message
+            });
+        }
+    },
 
     updateLesson: async function (req, res, next) {
         try {

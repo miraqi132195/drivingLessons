@@ -9,6 +9,7 @@ const {
 const {
     saveNewLessonDetails,
     getAllLessons,
+    getAllStudentLessons,
     updateLesson
 } = require('../controllers/lessonController');
 
@@ -35,6 +36,7 @@ router.put('/students/:studentId', updateStudentProfile);
 // Lesson Management Routes
 router.post('/lessons', saveNewLessonDetails);
 router.get('/lessons', getAllLessons);
+router.get('/lessons/:studentId', getAllStudentLessons);
 router.put('/lessons/:lessonId', updateLesson);
 
 // Report Generation Routes
