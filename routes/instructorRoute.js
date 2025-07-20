@@ -27,7 +27,7 @@ router.use(authenticateUser);
 router.use(authorizeRoles(['admin-instructor','instructor']));
 
 // Student Management Routes
-router.get('/students', getAllStudents);
+router.get('/students',getAllStudents);
 router.post('/students', addNewStudent);
 router.get('/students/:studentId', getStudentProfile);
 router.put('/students/:studentId', updateStudentProfile);

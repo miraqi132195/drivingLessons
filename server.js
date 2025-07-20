@@ -42,42 +42,42 @@ app.use((req, res) => {
 });
 
 // Seed super admin function
-const seedSuperAdmin = async () => {
-  try {
-    console.log('🌱 Starting to seed super admin user...');
-
-    // Check if super admin already exists
-    const existingSuperAdmin = await User.findOne({ role: 'superAdmin' });
-    if (existingSuperAdmin) {
-      console.log('✅ Super admin already exists');
-      return existingSuperAdmin;
-    }
-
-    // Create super admin user with plain password (let pre-save hook hash it)
-    const superAdmin = await User.create({
-      firstName: 'Super',
-      lastName: 'Admin',
-      phoneNumber: '+1234567890',
-      password: 'superadmin123', // Plain password - will be hashed by pre-save hook
-      role: 'superAdmin',
-      dateOfBirth: '1990-01-01',
-      paymentId: 'SUPER_ADMIN_2024'
-    });
-
-    console.log('✅ Super admin user created successfully');
-    console.log('Super Admin Details:');
-    console.log(`Name: ${superAdmin.firstName} ${superAdmin.lastName}`);
-    console.log(`Phone: ${superAdmin.phoneNumber}`);
-    console.log(`Role: ${superAdmin.role}`);
-    console.log(`ID: ${superAdmin._id}`);
-
-    return superAdmin;
-
-  } catch (error) {
-    console.error('❌ Error seeding super admin user:', error);
-    throw error;
-  }
-};
+// const seedSuperAdmin = async () => {
+//   try {
+//     console.log('🌱 Starting to seed super admin user...');
+//
+//     // Check if super admin already exists
+//     const existingSuperAdmin = await User.findOne({ role: 'superAdmin' });
+//     // if (existingSuperAdmin) {
+//     //   console.log('✅ Super admin already exists');
+//     //   return existingSuperAdmin;
+//     // }
+//
+//     // Create super admin user with plain password (let pre-save hook hash it)
+//     const superAdmin = await User.create({
+//       firstName: 'Super',
+//       lastName: 'Admin',
+//       phoneNumber: '050000112',
+//       password: 'superadmin123', // Plain password - will be hashed by pre-save hook
+//       role: 'superAdmin',
+//       dateOfBirth: '1995-02-13',
+//       paymentId: 'SUPER_ADMIN_2024'
+//     });
+//
+//     console.log('✅ Super admin user created successfully');
+//     console.log('Super Admin Details:');
+//     console.log(`Name: ${superAdmin.firstName} ${superAdmin.lastName}`);
+//     console.log(`Phone: ${superAdmin.phoneNumber}`);
+//     console.log(`Role: ${superAdmin.role}`);
+//     console.log(`ID: ${superAdmin._id}`);
+//
+//     return superAdmin;
+//
+//   } catch (error) {
+//     console.error('❌ Error seeding super admin user:', error);
+//     throw error;
+//   }
+// };
 
 // Seed sample data function
 const seedSampleData = async () => {
@@ -181,10 +181,10 @@ const startServer = async () => {
         console.log('🟢 Connected to MongoDB');
 
         // Seed super admin (uncomment to seed)
-        await seedSuperAdmin();
+        // await seedSuperAdmin();
 
         // Seed sample data (uncomment to seed)
-        await seedSampleData();
+        // await seedSampleData();
 
         app.listen(PORT, () => {
             console.log(`🚀 Server running on http://localhost:${PORT}`);

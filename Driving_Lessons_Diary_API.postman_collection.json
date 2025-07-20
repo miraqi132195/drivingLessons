@@ -1,0 +1,770 @@
+{
+	"info": {
+		"_postman_id": "driving-lessons-diary-api",
+		"name": "Driving Lessons Diary API",
+		"description": "Complete API collection for Driving Lessons Diary application. Includes authentication, user management, student management, lesson management, and reporting endpoints.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"item": [
+				{
+					"name": "Sign Up",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phoneNumber\": \"+1234567890\",\n  \"password\": \"password123\",\n  \"role\": \"instructor\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/signUp",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"signUp"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sign In",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phoneNumber\": \"+1234567890\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/signIn",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"signIn"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints for user registration and login"
+		},
+		{
+			"name": "👨‍🏫 Student Management",
+			"item": [
+				{
+					"name": "Get All Students",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/instructor/students",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add New Student",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"studentFullName\": \"Alice Johnson\",\n  \"phoneNumber\": \"+1234567893\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/instructor/students",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Student Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/instructor/students/{{studentId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"students",
+								"{{studentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Student Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"studentFullName\": \"Alice Johnson Updated\",\n  \"phoneNumber\": \"+1234567893\",\n  \"studentStatus\": \"active\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/instructor/students/{{studentId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"students",
+								"{{studentId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Student management endpoints for CRUD operations"
+		},
+		{
+			"name": "📚 Lesson Management",
+			"item": [
+				{
+					"name": "Save New Lesson",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"studentId\": \"{{studentId}}\",\n  \"startTime\": \"2024-01-15T10:00:00Z\",\n  \"endTime\": \"2024-01-15T11:00:00Z\",\n  \"noteForTheLesson\": \"First driving lesson - student showed good progress\",\n  \"route\": [\"Home\", \"Main Street\", \"Highway\"],\n  \"city\": \"New York\",\n  \"status\": \"completed\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/instructor/lessons",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"lessons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Lessons",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/instructor/lessons",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"lessons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Lesson",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"completed\",\n  \"noteForTheLesson\": \"Updated lesson notes - student completed all exercises successfully\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/instructor/lessons/{{lessonId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"lessons",
+								"{{lessonId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Lesson management endpoints for scheduling and tracking lessons"
+		},
+		{
+			"name": "📊 Reports & Analytics",
+			"item": [
+				{
+					"name": "Generate Instructor Diary Report",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/instructor/reports/instructor-diary?startDate=2024-01-01&endDate=2024-12-31",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"reports",
+								"instructor-diary"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-12-31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Student Diary Report",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/instructor/reports/student-diary/{{studentId}}?startDate=2024-01-01&endDate=2024-12-31",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"reports",
+								"student-diary",
+								"{{studentId}}"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-12-31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export Student Data (JSON)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/instructor/reports/export-student/{{studentId}}?format=json",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"reports",
+								"export-student",
+								"{{studentId}}"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Export Student Data (CSV)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/instructor/reports/export-student/{{studentId}}?format=csv",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"reports",
+								"export-student",
+								"{{studentId}}"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "csv"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Reporting and analytics endpoints for generating insights and exporting data"
+		},
+		{
+			"name": "🏫 Super Admin Management",
+			"item": [
+				{
+					"name": "Create Driving School",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{superAdminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"schoolName\": \"ABC Driving School\",\n  \"schoolAddress\": \"123 Main St, New York\",\n  \"adminFirstName\": \"John\",\n  \"adminLastName\": \"Admin\",\n  \"adminPhoneNumber\": \"+1234567891\",\n  \"adminPassword\": \"admin123\",\n  \"drivingLicense\": \"DL123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/newDrivingSchool",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"newDrivingSchool"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Admin-Instructor to School",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{superAdminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"schoolId\": \"{{schoolId}}\",\n  \"adminFirstName\": \"Jane\",\n  \"adminLastName\": \"Admin\",\n  \"adminPhoneNumber\": \"+1234567894\",\n  \"adminPassword\": \"admin123\",\n  \"drivingLicense\": \"DL789012\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/newAdminInstructor",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"newAdminInstructor"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Super admin endpoints for managing driving schools and admin-instructors"
+		},
+		{
+			"name": "🔧 Admin-Instructor Management",
+			"item": [
+				{
+					"name": "Add New Instructor",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Mike\",\n  \"lastName\": \"Instructor\",\n  \"phoneNumber\": \"+1234567895\",\n  \"email\": \"mike@example.com\",\n  \"password\": \"instructor123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin-instructor/instructors",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin-instructor",
+								"instructors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Instructors",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin-instructor/instructors",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin-instructor",
+								"instructors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Students (Admin-Instructor)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/admin-instructor/students",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin-instructor",
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add New Student (Admin-Instructor)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"studentFullName\": \"Sarah Wilson\",\n  \"phoneNumber\": \"+1234567896\",\n  \"instructorId\": \"{{instructorId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin-instructor/students",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin-instructor",
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Student Profile (Admin-Instructor)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"studentFullName\": \"Sarah Wilson Updated\",\n  \"phoneNumber\": \"+1234567896\",\n  \"studentStatus\": \"active\",\n  \"instructorId\": \"{{instructorId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin-instructor/students/{{studentId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin-instructor",
+								"students",
+								"{{studentId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Admin-instructor endpoints for managing instructors and students within their school"
+		},
+		{
+			"name": "🧪 Test Cases",
+			"item": [
+				{
+					"name": "Test Unauthorized Access",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/instructor/students",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test Invalid Student ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/instructor/students/invalid-id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"students",
+								"invalid-id"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test Invalid Lesson Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminInstructorToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"noteForTheLesson\": \"Test lesson without required fields\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/instructor/lessons",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"instructor",
+								"lessons"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Test cases for error handling and validation"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000/api",
+			"type": "string"
+		},
+		{
+			"key": "superAdminToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adminInstructorToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "instructorToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "schoolId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "studentId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "lessonId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "instructorId",
+			"value": "",
+			"type": "string"
+		}
+	]
+} 

@@ -1,17 +1,18 @@
 const Student = require('../models/students');
 const Instructor = require('../models/instructors');
+const User = require('../models/users');
 const errorMessages = require('../types/errors').errorMessages
 const successMessages = require('../types/errors').successMessages
 
 exports.addNewInstructor = async (req, res) => {
     try {
-        const { firstName, lastName, phoneNumber, email, password } = req.body;
+        const { firstName, lastName, phoneNumber, password, drivingLicense } = req.body;
 
         // Validate required fields
-        if (!firstName || !lastName || !phoneNumber || !email || !password) {
+        if (!firstName || !lastName || !phoneNumber || !password) {
             return res.status(400).json({ 
                 success: false, 
-                message: 'All fields are required' 
+                message: 'First name, last name, phone number, and password are required' 
             });
         }
 
@@ -24,12 +25,54 @@ exports.addNewInstructor = async (req, res) => {
             });
         }
 
-        // Create new instructor logic here (similar to admin controller)
-        // This would typically involve creating a user and then an instructor profile
-        
+        // Check if user with this phone number already exists
+        const existingUser = await User.findOne({ phoneNumber });
+        if (existingUser) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'User with this phone number already exists' 
+            });
+        }
+
+        // Create the new user
+        const newUser = new User({
+            firstName,
+            lastName,
+            phoneNumber,
+            role: 'instructor',
+            password
+        });
+
+        // Save the user (password will be hashed automatically by the pre-save hook)
+        await newUser.save();
+
+        // Create the instructor record
+        const newInstructor = new Instructor({
+            userId: newUser._id,
+            schoolId: adminInstructor.schoolId,
+            drivingLicense: drivingLicense || ''
+        });
+
+        // Save the instructor
+        await newInstructor.save();
+
         return res.status(201).json({ 
             success: true, 
-            message: 'Instructor added successfully' 
+            message: 'Instructor added successfully',
+            data: {
+                user: {
+                    _id: newUser._id,
+                    firstName: newUser.firstName,
+                    lastName: newUser.lastName,
+                    phoneNumber: newUser.phoneNumber,
+                    role: newUser.role
+                },
+                instructor: {
+                    _id: newInstructor._id,
+                    drivingLicense: newInstructor.drivingLicense,
+                    schoolId: newInstructor.schoolId
+                }
+            }
         });
     } catch (error) {
         console.error('Error adding instructor:', error);

@@ -15,16 +15,16 @@ exports.getAllStudents = async (req, res) => {
         }
 
         // Get all students assigned to this specific instructor
-        const students = await Student.find({ instructorId: instructor._id })
-            .populate('schoolId', 'schoolName')
-            .populate('instructorId', 'userId')
-            .populate({
-                path: 'instructorId',
-                populate: {
-                    path: 'userId',
-                    select: 'firstName lastName phoneNumber'
-                }
-            });
+        const students = await Student.find({ instructorId: instructor._id }).select('studentFullName phoneNumber lessonsNumber studentStatus')
+            // .populate('schoolId', 'schoolName')
+            // .populate('instructorId', 'userId')
+            // .populate({
+            //     path: 'instructorId',
+            //     populate: {
+            //         path: 'userId',
+            //         select: 'firstName lastName phoneNumber'
+            //     }
+            // });
 
         return res.status(200).json({ 
             success: true, 

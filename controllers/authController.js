@@ -53,7 +53,7 @@ module.exports = {
             }
 
             // Verify password
-            const isMatch = await bcrypt.compare(password, user.password);
+            const isMatch = await user.comparePassword(password);
             if (!isMatch) {
                 return res.status(401).send({ error: "Invalid credentials" });
             }
@@ -66,6 +66,11 @@ module.exports = {
                 token,
                 userId: user._id,
                 role: user.role,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                phoneNumber: user.phoneNumber,
+                active: user.active,
+                dateOfBirth: user.dateOfBirth
             });
         } catch (error) {
             console.error("Error during sign in:", error);

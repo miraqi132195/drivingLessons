@@ -12,9 +12,9 @@ const userSchema = new mongoose.Schema({
     },
     active:{type: Boolean, default: true},
     password:{type: String,required: true},
-    dateOfBirth:{type: String,required: true},
+    dateOfBirth:{type: String,required: false},
 
-    paymentId:{type: String, required: true}
+    paymentId:{type: String, required: false}
 }, { timestamps: true });
 
 userSchema.pre('save', async function(next) {
@@ -28,4 +28,8 @@ userSchema.pre('save', async function(next) {
         next(error);
     }
 });
+userSchema.methods.comparePassword = async function(candidatePassword) {
+    return bcrypt.compare(candidatePassword, this.password);
+};
+
 module.exports = mongoose.model('User', userSchema);
